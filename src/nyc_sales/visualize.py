@@ -8,19 +8,10 @@ plt.style.use('default')
 sns.set_theme()
 
 class Visualizer:
-    """
+    '''
     dogtag: Visualizer-v1.0
-    description: 
-        Publication-quality visualization engine for NYC housing metrics, designed to produce clear, journal-ready figures and analyses on urban housing trends.
-        - This class provides a suite of methods for generating, styling, and saving core figures required for analytical publication and reporting.
-        Methods:
-            - savefig
-            - create_borough_trajectories
-            - create_affordability_index_plot
-            - create_market_breadth_plot
-            - create_2025_snapshot
-            - create_publication_figures
-    """
+    description: Publication-quality visualization engine for NYC housing metrics, producing clear, journal-ready figures and analyses for urban housing trends.
+    '''
 
     FIGSIZE_LANDSCAPE = (12, 7)
     DEFAULT_OUTDIR = Path('data/v')
@@ -29,18 +20,29 @@ class Visualizer:
 
     @staticmethod
     def _find_col(df, colname):
-        """Return DataFrame column matching colname (case-insensitive); raise if not found."""
+        '''
+        dogtag: Visualizer._find_col-v1.0
+        description: Return DataFrame column matching colname (case-insensitive); raise if not found.
+        '''
         for c in df.columns:
             if str(c) == colname or str(c).lower() == colname.lower():
                 return c
-        raise KeyError(f"Column '{colname}' not found (tried case-insensitive match)")
+        raise KeyError(f'Column "{colname}" not found (tried case-insensitive match)')
 
     @staticmethod
     def _format_millions(x, _):
+        '''
+        dogtag: Visualizer._format_millions-v1.0
+        description: Formats numeric value in millions as a dollar string (e.g., $1.5M).
+        '''
         return f'${x/1e6:.1f}M'
 
     @classmethod
     def savefig(cls, fig, name, outdir=None):
+        '''
+        dogtag: Visualizer.savefig-v1.0
+        description: Saves a matplotlib figure to the specified output directory with high DPI resolution.
+        '''
         outdir = Path(outdir) if outdir else cls.DEFAULT_OUTDIR
         outdir.mkdir(exist_ok=True, parents=True)
         fig.savefig(str(outdir / name), dpi=300, bbox_inches='tight')
@@ -48,12 +50,20 @@ class Visualizer:
 
     @classmethod
     def _prepare_boroughs(cls, df, borough_col):
+        '''
+        dogtag: Visualizer._prepare_boroughs-v1.0
+        description: Prepares borough list from DataFrame, maintaining consistent ordering according to BOROUGH_ORDER.
+        '''
         boroughs = df[borough_col].dropna().str.upper().unique()
         # Maintain consistent ordering
         return [b for b in cls.BOROUGH_ORDER if b in boroughs] + [b for b in boroughs if b not in cls.BOROUGH_ORDER]
 
     @classmethod
     def create_borough_trajectories(cls, df, price_col='MEDIAN SALE PRICE', year_col='YEAR', borough_col='BOROUGH NAME', figsize=None):
+        '''
+        dogtag: Visualizer.create_borough_trajectories-v1.0
+        description: Creates a line plot showing median sale price trajectories over time for each NYC borough, with markers for key years.
+        '''
         figsize = figsize or cls.FIGSIZE_LANDSCAPE
         price_col = cls._find_col(df, price_col)
         year_col = cls._find_col(df, year_col)
@@ -86,6 +96,10 @@ class Visualizer:
 
     @classmethod
     def create_affordability_index_plot(cls, df, borough_col='BOROUGH NAME', affordability_col='AFFORDABILITY INDEX', year_col='YEAR', figsize=None):
+        '''
+        dogtag: Visualizer.create_affordability_index_plot-v1.0
+        description: Creates a plot showing borough entry-level affordability index (25th percentile of median sale price) over time with annotations for steepest declines.
+        '''
         figsize = figsize or cls.FIGSIZE_LANDSCAPE
         affordability_col = cls._find_col(df, affordability_col)
         year_col = cls._find_col(df, year_col)
@@ -129,6 +143,10 @@ class Visualizer:
 
     @classmethod
     def create_market_breadth_plot(cls, df, year_col='YEAR', breadth_col='MARKET BREADTH', figsize=(11, 6)):
+        '''
+        dogtag: Visualizer.create_market_breadth_plot-v1.0
+        description: Creates a plot showing the percentage of NYC neighborhoods with YoY median price growth over time.
+        '''
         year_col = cls._find_col(df, year_col)
         breadth_col = cls._find_col(df, breadth_col)
         df = df.copy()
@@ -139,7 +157,7 @@ class Visualizer:
         values = (df.groupby(year_col)[breadth_col].mean().reindex(valid_years).values) * 100
         x = np.array(valid_years)
         fig, ax = plt.subplots(figsize=figsize)
-        color = sns.color_palette("deep")[0]
+        color = sns.color_palette('deep')[0]
         ax.plot(x, values, 'o-', linewidth=2.5, markersize=8, color=color, alpha=0.88, zorder=2)
         ax.fill_between(x, values, alpha=0.17, color=color)
         ax.axhline(50, color='red', linestyle='--', linewidth=1.25, alpha=0.55, label='50% Threshold')
@@ -168,6 +186,10 @@ class Visualizer:
 
     @classmethod
     def create_2025_snapshot(cls, df, price_col='MEDIAN SALE PRICE', neighborhood_col='NEIGHBORHOOD', year_col='YEAR', top_n=10, figsize=(14, 8)):
+        '''
+        dogtag: Visualizer.create_2025_snapshot-v1.0
+        description: Creates horizontal bar charts showing top and bottom NYC neighborhoods by median sale price in 2025, with reference markers for 2019 and 2017 values.
+        '''
         price_col_actual = cls._find_col(df, price_col)
         year_col_actual = cls._find_col(df, year_col)
         neighborhood_col_actual = cls._find_col(df, neighborhood_col)
@@ -195,7 +217,7 @@ class Visualizer:
             for i, name in enumerate(neigh_data.index[::-1]):
                 v = neigh_data[name]
                 ax.text(
-                    v/1e6 + 0.035, i, f"${v/1e6:,.2f}M",
+                    v/1e6 + 0.035, i, f'${v/1e6:,.2f}M',
                     va='center', ha='left', fontsize=13, fontweight='bold',
                     color='#203040', zorder=5,
                     bbox=dict(facecolor='white', alpha=0.6, boxstyle='round,pad=0.10', linewidth=0)
@@ -210,7 +232,7 @@ class Visualizer:
 
             ax.set_xlabel('Median Sale Price (Million $)', fontsize=13, fontweight='bold', labelpad=10)
             ax.set_title(title, fontsize=16, fontweight='bold', pad=12)
-            ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"${x:,.1f}M"))
+            ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'${x:,.1f}M'))
             ax.tick_params(axis='y', labelsize=12, width=0)
             ax.tick_params(axis='x', labelsize=12)
             for spine in ['top', 'right', 'left']:
@@ -246,10 +268,10 @@ class Visualizer:
             old2019_bottom = pd.Series(index=neighborhoods_bottom, dtype=float)
             old2017_bottom = pd.Series(index=neighborhoods_bottom, dtype=float)
 
-        top_color = sns.color_palette("YlOrRd", 10)[-3]
-        bottom_color = sns.color_palette("PuBu", 10)[3]
-        ref2017_color = "#955cc6"
-        ref2019_color = "#4aac4a"
+        top_color = sns.color_palette('YlOrRd', 10)[-3]
+        bottom_color = sns.color_palette('PuBu', 10)[3]
+        ref2017_color = '#955cc6'
+        ref2019_color = '#4aac4a'
 
         fig2 = bar_plot(bottom, '2025: Bottom NYC Neighborhoods by Median Price\n(Markers: 2019 and 2017 values)', old2019_bottom, old2017_bottom, bottom_color, ref2019_color, ref2017_color, y_label=True)
         fig2.tight_layout(rect=[0, 0, 1, 0.96])

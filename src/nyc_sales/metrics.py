@@ -2,32 +2,38 @@ import pandas as pd
 from pathlib import Path
 
 class MetricsCalculator:
-    """
+    '''
     dogtag: MetricsCalculator-v1.0
-    description: Computes NYC property sales metrics for borough-by-year affordability (25th percentile of median sale price), citywide market breadth (share of neighborhoods with rising YOY median sale price), and number of tracked neighborhoods.
-
-    Functions:
-        compute(src_dir, trgt_dir, file_name):
-            - Aggregates affordability and market breadth metrics, outputs a summary matrix as CSV.
-        _compute_market_breadth(df):
-            - Calculates market breadth and neighborhood counts by year.
-    """
+    description: Computes NYC property sales metrics for borough-by-year affordability, citywide market breadth, and number of tracked neighborhoods.
+    '''
 
     _instance = None
     
     def __new__(cls):
+        '''
+        dogtag: MetricsCalculator.__new__-v1.0
+        description: Singleton pattern implementation to ensure only one instance of MetricsCalculator exists.
+        '''
         if cls._instance is None:
             cls._instance = super(MetricsCalculator, cls).__new__(cls)
         return cls._instance
     
     @classmethod
     def _get_instance(cls):
+        '''
+        dogtag: MetricsCalculator._get_instance-v1.0
+        description: Returns the singleton instance of MetricsCalculator, creating it if it doesn't exist.
+        '''
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
 
     @classmethod
     def _compute_market_breadth(cls, df):
+        '''
+        dogtag: MetricsCalculator._compute_market_breadth-v1.0
+        description: Calculates market breadth (share of neighborhoods with rising YoY median sale price) and neighborhood counts by year.
+        '''
         df = pd.concat((pd.read_csv(f) for f in Path('data/p').glob('*.csv')), ignore_index=True)
         df = df.sort_values(['NEIGHBORHOOD', 'YEAR'])
         df['MEDIAN PRICE YOY PCT'] = df.groupby('NEIGHBORHOOD')['MEDIAN SALE PRICE'].diff()
@@ -45,6 +51,10 @@ class MetricsCalculator:
 
     @classmethod
     def compute(cls, src_dir='', trgt_dir='', file_name=''):
+        '''
+        dogtag: MetricsCalculator.compute-v1.0
+        description: Aggregates affordability and market breadth metrics, outputs a summary matrix as CSV.
+        '''
         src_dir = Path(src_dir)
         trgt_dir = Path(trgt_dir)
         trgt_dir.mkdir(parents=True, exist_ok=True)
