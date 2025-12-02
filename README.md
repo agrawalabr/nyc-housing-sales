@@ -36,14 +36,14 @@ data/
 ├── p/   # 📊 Processed metric tables
 └── v/   # 🖼️ Auto-generated visualizations
 
-src/
-└── nyc_sales/
-    ├── __init__.py       # Main module loader 🚦
-    ├── extract.py        # 📑 Excel → CSV schema checker
-    ├── clean.py          # 🧼 Cleaning & normalization
-    ├── ingest.py         # 🗃️ Smart ingest
-    ├── metrics.py        # 📏 Calculates custom metrics
-    └── visualize.py      # 🎨 Publication-quality figures
+nyc_sales/
+|
+├── __init__.py       # Main module loader 🚦
+├── extract.py        # 📑 Excel → CSV schema checker
+├── clean.py          # 🧼 Cleaning & normalization
+├── ingest.py         # 🗃️ Smart ingest
+├── metrics.py        # 📏 Calculates custom metrics
+└── visualize.py      # 🎨 Publication-quality figures
 
 main.ipynb   # 🚀 Notebook: Run the whole pipeline end-to-end!
 requirements.txt   # 🐍 Python dependencies
@@ -89,7 +89,7 @@ requirements.txt   # 🐍 Python dependencies
 Use the modules directly in your own scripts:
 
 ```python
-from src.nyc_sales import DataExtractor, DataCleaner, DataIngester, MetricsCalculator, Visualizer
+from nyc_sales import DataExtractor, DataCleaner, DataIngester, MetricsCalculator, Visualizer
 
 # Or import specific classes
 from nyc_sales.extract import DataExtractor as de
@@ -200,7 +200,7 @@ The unified dataset (`data/i/nyc_sales_2015_2025.csv`) contains the following ke
 - 🗂️ **Unified Dataset:** `data/i/nyc_sales_2015_2025.csv` - Complete cleaned dataset with all transformations
 - 📊 **Year-Partitioned Summaries:** `data/p/*_nyc_sales_summary.csv` - Annual aggregated summaries
 - 📈 **Metrics Matrix:** `data/p/nyc_sales_custom_matrix.csv` - Affordability Index & Market Breadth by borough/year
-- 🔗 **Modular Codebase:** `src/nyc_sales/` - Well-documented, singleton-pattern classes with "dogtag" versioning
+- 🔗 **Modular Codebase:** `nyc_sales/` - Well-documented, singleton-pattern classes with "dogtag" versioning
 - 🖼️ **Visualizations:** 5 publication-quality figures in `data/v/`:
   - `borough_trajectories.png` - Price evolution across boroughs
   - `borough_affordability_index.png` - Entry-level affordability trends
